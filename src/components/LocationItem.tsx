@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@apollo/client";
-import { FETCH_ITEM_LOCATION } from "../services/queries";
+import { FETCH_ITEM_LOCATION, PATCH_LOCATION_ITEM } from "../services/queries";
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { SlCalender } from 'react-icons/sl/';
@@ -20,14 +20,22 @@ const LocationItem: React.FC<LocationItemDef> = (id) => {
         npi: false,
         partof: false,
     })
+    const [newVal, setNewVal] = useState(locationData);
+    const [update, updated] = useMutation(PATCH_LOCATION_ITEM, { variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410", locationUpdateId: id.id, requestBody: newVal } });
+    let isValChanged = false;
+    if (locationData) isValChanged = JSON.parse(JSON.stringify(locationData)).toString() !== JSON.parse(JSON.stringify(newVal)).toString();
     const itemLocation = useQuery(FETCH_ITEM_LOCATION, { variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410", locationReadId: id.id } })
+    console.log(itemLocation);
+    console.log(newVal, "New Val");
     useEffect(() => {
         if (itemLocation) setLocationData(itemLocation?.data?.locationRead?.resource)
     }, [itemLocation]);
 
-    // useEffect(() => {
-    //     setLocationData(mockData)
-    // }, []);
+    useEffect(() => {
+        if (locationData) setNewVal(locationData)
+    }, [locationData]);
+
+
 
     const mockData = {
         "address": "address of pras",
@@ -54,12 +62,17 @@ const LocationItem: React.FC<LocationItemDef> = (id) => {
         return hoursPassed + " " + "hrs";
     }
 
+    const handleUpdate = () => {
+        delete newVal.__typename;
+        update({ variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410", locationUpdateId: id.id, requestBody: newVal } })
+    }
+
     return locationData && <div className="w-full h-full justify-between">
         <div className="border p-4 my-4 flex flex-col cursor-pointer gap-2">
 
             {locationData.name &&
                 <div className="flex justify-between items-center">
-                    <input className={`text-md ${!editKey.name ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} disabled={!editKey.name} value={locationData.name} />
+                    <input className={`text-md ${!editKey.name ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, name: e.target.value })} disabled={!editKey.name} value={newVal.name} />
                     <button className="px-3 py text-sm rounded-md bg-blue-200 ml-4 font-bold" onClick={() => setEditKey({ ...editKey, name: true })}>
                         Edit
                     </button>
@@ -68,7 +81,7 @@ const LocationItem: React.FC<LocationItemDef> = (id) => {
             {locationData.address &&
 
                 <div className="flex justify-between items-center">
-                    <input className={`text-md ${!editKey.address ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} disabled={!editKey.address} value={locationData.address} />
+                    <input className={`text-md ${!editKey.address ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, address: e.target.value })} disabled={!editKey.address} value={newVal.address} />
                     <button className="px-3 py text-sm rounded-md bg-blue-200 ml-4 font-bold" onClick={() => setEditKey({ ...editKey, address: true })}>
                         Edit
                     </button>
@@ -77,7 +90,7 @@ const LocationItem: React.FC<LocationItemDef> = (id) => {
 
             {locationData.alias &&
                 <div className="flex justify-between items-center">
-                    <input className={`text-md ${!editKey.alias ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} disabled={!editKey.alias} value={locationData.alias} />
+                    <input className={`text-md ${!editKey.alias ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, alias: e.target.value })} disabled={!editKey.alias} value={newVal.alias} />
                     <button className="px-3 py text-sm rounded-md bg-blue-200 ml-4 font-bold" onClick={() => setEditKey({ ...editKey, alias: true })}>
                         Edit
                     </button>
@@ -87,7 +100,7 @@ const LocationItem: React.FC<LocationItemDef> = (id) => {
             {locationData.description &&
 
                 <div className="flex justify-between items-center">
-                    <input className={`text-md ${!editKey.desc ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} disabled={!editKey.desc} value={locationData.description} />
+                    <input className={`text-md ${!editKey.desc ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, description: e.target.value })} disabled={!editKey.desc} value={newVal.description} />
                     <button className="px-3 py text-sm rounded-md bg-blue-200 ml-4 font-bold" onClick={() => setEditKey({ ...editKey, desc: true })}>
                         Edit
                     </button>
@@ -96,7 +109,7 @@ const LocationItem: React.FC<LocationItemDef> = (id) => {
             {locationData.managingOrganization &&
 
                 <div className="flex justify-between items-center">
-                    <input className={`text-md ${!editKey.org ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} disabled={!editKey.org} value={locationData.managingOrganization} />
+                    <input className={`text-md ${!editKey.org ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, managingOrganization: e.target.value })} disabled={!editKey.org} value={newVal.managingOrganization} />
                     <button className="px-3 py text-sm rounded-md bg-blue-200 ml-4 font-bold" onClick={() => setEditKey({ ...editKey, org: true })}>
                         Edit
                     </button>
@@ -105,7 +118,7 @@ const LocationItem: React.FC<LocationItemDef> = (id) => {
             {locationData.npi &&
 
                 <div className="flex justify-between items-center">
-                    <input className={`text-md ${!editKey.npi ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} disabled={!editKey.npi} value={locationData.npi} />
+                    <input className={`text-md ${!editKey.npi ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, npi: e.target.value })} disabled={!editKey.npi} value={newVal.npi} />
                     <button className="px-3 py text-sm rounded-md bg-blue-200 ml-4 font-bold" onClick={() => setEditKey({ ...editKey, npi: true })}>
                         Edit
                     </button>
@@ -113,7 +126,7 @@ const LocationItem: React.FC<LocationItemDef> = (id) => {
             }
             {locationData.partof &&
                 <div className="flex justify-between items-center">
-                    <input className={`text-md ${!editKey.partof ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} disabled={!editKey.partof} value={locationData.partOf} />
+                    <input className={`text-md ${!editKey.partof ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, partOf: e.target.value })} disabled={!editKey.partof} value={newVal.partOf} />
                     <button className="px-3 py text-sm rounded-md bg-blue-200 ml-4 font-bold" onClick={() => setEditKey({ ...editKey, partof: true })}>
                         Edit
                     </button>
@@ -132,6 +145,9 @@ const LocationItem: React.FC<LocationItemDef> = (id) => {
                 </div>
                 <span className="text-xs font-md text-gray-500">{formatDate(locationData.updatedAt)}</span>
             </div>
+            {<button onClick={() => handleUpdate()} className="px-8 py-2 text-sm rounded-md bg-green-500 ml-4 text-white font-bold">
+                Save
+            </button>}
         </div>
     </div >
 }

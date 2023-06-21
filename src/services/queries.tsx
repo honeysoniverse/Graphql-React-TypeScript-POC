@@ -54,4 +54,10 @@ export const FETCH_ITEM_LOCATION = gql`query Query($locationReadId: String!, $te
         updatedAt
       }
     }
-  }`
+  }`;
+
+  export const PATCH_LOCATION_ITEM = gql`mutation LocationUpdate($locationUpdateId: String!, $tenant: String!, $requestBody: LocationWriteInput!) {
+    locationUpdate(id: $locationUpdateId, tenant: $tenant, requestBody: $requestBody) {
+      resourceID
+    }
+  }`;

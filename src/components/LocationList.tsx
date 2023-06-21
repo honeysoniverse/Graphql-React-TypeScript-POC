@@ -9,15 +9,16 @@ import { useEffect, useState } from "react";
 
 interface LocationListDef {
     setLocationId: Dispatch<string>;
+    setShowAddItem: Dispatch<boolean>;
+
 }
 
-export const LocationList: React.FC<LocationListDef> = ({ setLocationId }) => {
+export const LocationList: React.FC<LocationListDef> = ({ setLocationId, setShowAddItem }) => {
     const [locationsData, setLocationsData] = useState<any>([])
-    const locations = useQuery(FETCH_LOCATIONS, { variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410" } })
-    console.log(locations);
+    const { data, refetch } = useQuery(FETCH_LOCATIONS, { variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410" } })
     useEffect(() => {
-        if (locations) setLocationsData(locations?.data?.locationList?.resources)
-    }, [locations]);
+        if (data) setLocationsData(data?.locationList?.resources)
+    }, [data]);
     const mockData = [
         {
             "address": "address of pras",
@@ -194,10 +195,12 @@ export const LocationList: React.FC<LocationListDef> = ({ setLocationId }) => {
     //     setLocationsData(mockData)
     // }, []);
 
-    console.log("LOCATIONS DATA", locationsData);
     const handleItemClick = (id: string) => {
         console.log(id, "ID>>>>>>>>>");
         setLocationId(id);
+    }
+    const handleAddNewItem = () => {
+        setShowAddItem(true);
     }
 
     const formatDate = (date: number) => {
@@ -206,15 +209,18 @@ export const LocationList: React.FC<LocationListDef> = ({ setLocationId }) => {
         const hoursPassed = Math.floor(timeDiff / (60 * 60 * 1000));
         return hoursPassed + " " + "hrs";
     }
+    const handleRefresh = () => {
+        refetch();
+    }
     return <>
         <div className="flex w-full flex-col p-8 m-2 border">
             <div className="flex-col">
                 <div className="flex justify-between items-center">
-                    <button className="px-12 py-2 shadow-md border">
+                    <button className="px-12 py-2 shadow-md border" onClick={handleRefresh}>
                         <FiRefreshCcw className="w-4" />
                     </button>
                     <span className="font-bold text-md">Locations</span>
-                    <button className="px-8 py-2">
+                    <button className="px-8 py-2" onClick={() => handleAddNewItem()}>
                         <span className="font-bold text-lg">+</span>
                     </button>
                 </div>

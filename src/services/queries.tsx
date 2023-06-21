@@ -61,3 +61,9 @@ export const FETCH_ITEM_LOCATION = gql`query Query($locationReadId: String!, $te
       resourceID
     }
   }`;
+
+  export const ADD_ITEM = gql`mutation LocationCreate($requestBody: LocationWriteInput!, $tenant: String!) {
+    locationCreate(requestBody: $requestBody, tenant: $tenant) {
+      resourceID
+    }
+  }`;

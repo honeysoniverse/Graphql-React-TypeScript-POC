@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@apollo/client";
-import { FETCH_ITEM_LOCATION, PATCH_LOCATION_ITEM } from "../services/queries";
+import { ADD_ITEM, FETCH_ITEM_LOCATION, PATCH_LOCATION_ITEM } from "../services/queries";
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { SlCalender } from 'react-icons/sl/';
@@ -8,32 +8,16 @@ import { FcClock } from 'react-icons/fc';
 interface AddNewItemDef {
 }
 const AddNewItem: React.FC<AddNewItemDef> = () => {
-    const [locationData, setLocationData] = useState<any>([])
-    const [editKey, setEditKey] = useState({
-        address: false,
-        alias: false,
-        desc: false,
-        org: false,
-        name: false,
-        npi: false,
-        partof: false,
+    const [data, setData] = useState({
+        address: "",
+        alias: "",
+        description: "",
+        managingOrganization: "",
+        name: "",
+        npi: "",
+        partOf: "",
     })
-    const [newVal, setNewVal] = useState(locationData);
-    const [update, updated] = useMutation(PATCH_LOCATION_ITEM, { variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410", locationUpdateId: "d.id", requestBody: newVal } });
-    let isValChanged = false;
-    if (locationData) isValChanged = JSON.parse(JSON.stringify(locationData)).toString() !== JSON.parse(JSON.stringify(newVal)).toString();
-    const itemLocation = useQuery(FETCH_ITEM_LOCATION, { variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410", locationReadId: "id.id" } })
-    console.log(itemLocation);
-    console.log(newVal, "New Val");
-    useEffect(() => {
-        if (itemLocation) setLocationData(itemLocation?.data?.locationRead?.resource)
-    }, [itemLocation]);
-
-    useEffect(() => {
-        if (locationData) setNewVal(locationData)
-    }, [locationData]);
-
-
+    const [add, added] = useMutation(ADD_ITEM, { variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410", requestBody: data } });
 
     const mockData = {
         "address": "address of pras",
@@ -53,85 +37,65 @@ const AddNewItem: React.FC<AddNewItemDef> = () => {
         "updatedAt": 16
     };
 
-    const formatDate = (date: number) => {
-        const curr = Date.now();
-        const timeDiff = curr - date;
-        const hoursPassed = Math.floor(timeDiff / (60 * 60 * 1000));
-        return hoursPassed + " " + "hrs";
+    const handleAdd = () => {
+        add({ variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410", requestBody: data } })
     }
 
-    const handleUpdate = () => {
-        delete newVal.__typename;
-        update({ variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410", locationUpdateId: "id.id", requestBody: newVal } })
-    }
+    return <div className="fixed z-50 top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-75">
+        <div className="bg-white rounded p-8">
+            <div className="w-full h-full justify-between">
+                <div className="border p-4 my-4 flex flex-col cursor-pointer gap-2">
 
-    return locationData && <div className="fixed z-50 top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-75">
-    <div className="bg-white rounded p-8">
-    <div className="w-full h-full justify-between">
-    <div className="border p-4 my-4 flex flex-col cursor-pointer gap-2">
+                    {
+                        <div className="flex flex-col justify-between items-center">
+                            <label className="text-xs font-bold self-start">Name</label>
+                            <input className={`text-md  rounded-md p-2 bg-gray-200 text-xs font-bold`} onChange={(e) => setData({ ...data, name: e.target.value })} value={data.name} />
+                        </div>
+                    }
+                    {
 
-        {locationData.name &&
-            <div className="flex justify-between items-center">
-                <input className={`text-md ${!editKey.name ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, name: e.target.value })} disabled={!editKey.name} value={newVal.name} />
-            </div>
-        }
-        {locationData.address &&
+                        <div className="flex flex-col justify-between items-center">
+                            <label className="text-xs font-bold self-start">Address</label>                            <input className={`text-md bg-gray-200 rounded-md p-2 text-xs font-bold`} onChange={(e) => setData({ ...data, address: e.target.value })} value={data.address} />
+                        </div>
+                    }
 
-            <div className="flex justify-between items-center">
-                <input className={`text-md ${!editKey.address ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, address: e.target.value })} disabled={!editKey.address} value={newVal.address} />
-            </div>
-        }
+                    {
+                        <div className="flex flex-col justify-between items-center">
+                            <label className="text-xs font-bold self-start">Alias</label>                            <input className={`text-md bg-gray-200 rounded-md p-2 text-xs font-bold`} onChange={(e) => setData({ ...data, alias: e.target.value })} value={data.alias} />
+                        </div>
 
-        {locationData.alias &&
-            <div className="flex justify-between items-center">
-                <input className={`text-md ${!editKey.alias ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, alias: e.target.value })} disabled={!editKey.alias} value={newVal.alias} />
-            </div>
+                    }
+                    {
 
-        }
-        {locationData.description &&
+                        <div className="flex flex-col justify-between items-center">
+                            <label className="text-xs font-bold self-start">Description</label>                            <input className={`text-md bg-gray-200 rounded-md p-2 text-xs font-bold`} onChange={(e) => setData({ ...data, description: e.target.value })} value={data.description} />
+                        </div>
+                    }
+                    {
 
-            <div className="flex justify-between items-center">
-                <input className={`text-md ${!editKey.desc ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, description: e.target.value })} disabled={!editKey.desc} value={newVal.description} />
-            </div>
-        }
-        {locationData.managingOrganization &&
+                        <div className="flex flex-col justify-between items-center">
+                            <label className="text-xs font-bold self-start">Organization</label>                            <input className={`text-md bg-gray-200 rounded-md p-2 text-xs font-bold`} onChange={(e) => setData({ ...data, managingOrganization: e.target.value })} value={data.managingOrganization} />
+                        </div>
+                    }
+                    {
 
-            <div className="flex justify-between items-center">
-                <input className={`text-md ${!editKey.org ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, managingOrganization: e.target.value })} disabled={!editKey.org} value={newVal.managingOrganization} />
-            </div>
-        }
-        {locationData.npi &&
-
-            <div className="flex justify-between items-center">
-                <input className={`text-md ${!editKey.npi ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, npi: e.target.value })} disabled={!editKey.npi} value={newVal.npi} />
-            </div>
-        }
-        {locationData.partof &&
-            <div className="flex justify-between items-center">
-                <input className={`text-md ${!editKey.partof ? "bg-gray-100" : "bg-gray-200"} rounded-md p-2 text-xs font-bold`} onChange={(e) => setNewVal({ ...newVal, partOf: e.target.value })} disabled={!editKey.partof} value={newVal.partOf} />
-            </div>
-        }
-        <div className="flex justify-between mt-2">
-            <div className="flex">
-                <div className="flex justify-center items-center mr-2">
-                    <SlCalender />
-                    <span className="text-xs font-md">{"Dec-20"}</span>
+                        <div className="flex flex-col justify-between items-center">
+                            <label className="text-xs font-bold self-start">NPI</label>                            <input className={`text-md bg-gray-200 rounded-md p-2 text-xs font-bold`} onChange={(e) => setData({ ...data, npi: e.target.value })} value={data.npi} />
+                        </div>
+                    }
+                    {
+                        <div className="flex flex-col justify-between items-center">
+                            <label className="text-xs font-bold self-start">Part Of</label>                            <input className={`text-md bg-gray-200 rounded-md p-2 text-xs font-bold`} onChange={(e) => setData({ ...data, partOf: e.target.value })} value={data.partOf} />
+                        </div>
+                    }
+                    {<button onClick={handleAdd} className="px-8 py-2 text-sm rounded-md bg-green-500 ml-4 text-white font-bold">
+                        Save
+                    </button>}
                 </div>
-                <div className="flex justify-center items-center">
-                    <FcClock />
-                    <span className="text-xs font-md">{"02:25 PM"}</span>
-                </div>
-            </div>
-            <span className="text-xs font-md text-gray-500">{formatDate(locationData.updatedAt)}</span>
+            </div >
+
         </div>
-        {<button onClick={() => handleUpdate()} className="px-8 py-2 text-sm rounded-md bg-green-500 ml-4 text-white font-bold">
-            Save
-        </button>}
     </div>
-</div > 
-      
-    </div>
-  </div>
 }
 
 

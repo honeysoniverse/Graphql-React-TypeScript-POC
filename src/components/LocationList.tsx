@@ -6,7 +6,6 @@ import { Dispatch } from 'react';
 import { FcClock } from "react-icons/fc"
 
 import { useEffect, useState } from "react";
-import ItemModal from "./LocationItem";
 
 interface LocationListDef {
     setLocationId: Dispatch<string>;
@@ -14,9 +13,6 @@ interface LocationListDef {
 
 export const LocationList: React.FC<LocationListDef> = ({ setLocationId }) => {
     const [locationsData, setLocationsData] = useState<any>([])
-    const [showModal, setShowModal] = useState(false);
-    // const [locationId, setLocationId] = useState("");
-
     const locations = useQuery(FETCH_LOCATIONS, { variables: { tenant: "692627ef-fda8-4203-b108-e8e9f52ad410" } })
     console.log(locations);
     useEffect(() => {
@@ -26,7 +22,6 @@ export const LocationList: React.FC<LocationListDef> = ({ setLocationId }) => {
     const handleItemClick = (id: string) => {
         console.log(id, "ID>>>>>>>>>");
         setLocationId(id);
-        setShowModal(true);
     }
 
     const formatDate = (date: number) => {
@@ -70,19 +65,19 @@ export const LocationList: React.FC<LocationListDef> = ({ setLocationId }) => {
                             <span className="text-md text-xs font-bold">{item.name}</span>
                             <span className="px-3 py text-xs font-bold bg-orange-300 rounded-full self-center uppercase">{item.status || "NA"}</span>
                         </div>
-                        <span>{item.address}</span>
-                        <div className="flex justify-between">
+                        <span className="text-sm font-md">{item.address}</span>
+                        <div className="flex justify-between mt-2">
                             <div className="flex">
                                 <div className="flex justify-center items-center mr-2">
                                     <SlCalender />
-                                    <span>{"Dec-20"}</span>
+                                    <span className="text-xs font-md">{"Dec-20"}</span>
                                 </div>
                                 <div className="flex justify-center items-center">
                                     <FcClock />
-                                    <span>{"02:25 PM"}</span>
+                                    <span className="text-xs font-md">{"02:25 PM"}</span>
                                 </div>
                             </div>
-                            <span>{formatDate(item.updatedAt)}</span>
+                            <span className="text-xs font-md text-gray-500">{formatDate(item.updatedAt)}</span>
                         </div>
                     </div>
                 })}

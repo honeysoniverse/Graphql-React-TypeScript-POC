@@ -11,7 +11,7 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <div className="App w-full p-5 flex">
+      <div className="App w-full flex">
         <LocationList setLocationId={setLocationId}/>
         <LocationItem id={locationId}/>
       </div></ApolloProvider>

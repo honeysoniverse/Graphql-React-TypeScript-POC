@@ -27,3 +27,31 @@ export const FETCH_LOCATIONS = gql`query LocationList($tenant: String!) {
       }
     }
   }`;
+
+export const FETCH_ITEM_LOCATION = gql`query Query($locationReadId: String!, $tenant: String!) {
+    locationRead(id: $locationReadId, tenant: $tenant) {
+      id
+      resource {
+        address
+        alias
+        description
+        id
+        managingOrganization
+        name
+        npi
+        partOf
+        status
+        tag
+        taxId
+        telecom {
+          rank
+          system
+          use
+          value
+        }
+        tenant
+        type
+        updatedAt
+      }
+    }
+  }`

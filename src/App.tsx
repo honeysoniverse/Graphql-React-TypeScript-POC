@@ -1,4 +1,5 @@
 import React from 'react';
+import './index.css';
 import { LocationList } from './components/LocationList';
 import { ApolloProvider } from '@apollo/client';
 import client from './services/client';
